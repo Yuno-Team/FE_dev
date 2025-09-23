@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/bottom_navigation_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<String> selectedInterests;
@@ -199,34 +200,27 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: YunoBottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
           });
+          switch (index) {
+            case 0:
+              // 현재 홈 화면
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/explore');
+              break;
+            case 2:
+              // 일정 화면으로 이동 (미구현)
+              break;
+            case 3:
+              // 마이 화면으로 이동 (미구현)
+              break;
+          }
         },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey[600],
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: '탐색',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work),
-            label: '일정',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '마이',
-          ),
-        ],
       ),
     );
   }
