@@ -6,6 +6,7 @@ import '../models/policy.dart';
 import '../models/policy_filter.dart';
 import 'policy_detail_screen.dart';
 import 'explore_filter_screen.dart';
+import 'explore_loading_screen.dart';
 
 class ExploreResultsScreen extends StatefulWidget {
   final String searchQuery;
@@ -22,6 +23,7 @@ class ExploreResultsScreen extends StatefulWidget {
 }
 
 class _ExploreResultsScreenState extends State<ExploreResultsScreen> {
+  String _currentSearchText = '';
   List<Map<String, dynamic>> allPolicies = [
     {
       'title': '청년일자리 도약장려금',
@@ -69,8 +71,8 @@ class _ExploreResultsScreenState extends State<ExploreResultsScreen> {
       }
       
       // 검색어 필터링 (제목이나 설명에 포함되는지 확인)
-      if (widget.searchQuery.isNotEmpty && widget.searchQuery != '필터 검색') {
-        final query = widget.searchQuery.toLowerCase();
+      if (_currentSearchText.isNotEmpty && _currentSearchText != '필터 검색') {
+        final query = _currentSearchText.toLowerCase();
         final title = policy['title'].toString().toLowerCase();
         final description = policy['description'].toString().toLowerCase();
         if (!title.contains(query) && !description.contains(query)) {
@@ -85,6 +87,7 @@ class _ExploreResultsScreenState extends State<ExploreResultsScreen> {
   @override
   void initState() {
     super.initState();
+    _currentSearchText = widget.searchQuery;
     // 백엔드 연동 시 여기서 API 호출
     // _loadPolicies();
   }
@@ -119,9 +122,29 @@ class _ExploreResultsScreenState extends State<ExploreResultsScreen> {
               showBackButton: true,
               showSearchField: true,
               showFilterButton: true,
-              searchText: widget.searchQuery,
+              searchText: _currentSearchText,
               onBackPressed: () => Navigator.pop(context),
-              onClearPressed: () => Navigator.pop(context),
+              onSearchChanged: (text) {
+                setState(() {
+                  _currentSearchText = text;
+                });
+              },
+              onSearchSubmitted: (text) {
+                if (text.trim().isNotEmpty) {
+                  // 새로운 검색 실행 - 로딩 화면으로 이동
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ExploreLoadingScreen(searchQuery: text.trim()),
+                    ),
+                  );
+                }
+              },
+              onClearPressed: () {
+                setState(() {
+                  _currentSearchText = '';
+                });
+              },
               onFilterPressed: () {
                 Navigator.push(
                   context,
@@ -183,10 +206,6 @@ class _ExploreResultsScreenState extends State<ExploreResultsScreen> {
                               MaterialPageRoute(
                                 builder: (context) => PolicyDetailScreen(
                                   policyId: policy['policyId'],
-                                  title: policy['title'],
-                                  description: policy['description'],
-                                  category: policy['category'],
-                                  region: policy['region'],
                                 ),
                               ),
                             );
@@ -209,10 +228,10 @@ class _ExploreResultsScreenState extends State<ExploreResultsScreen> {
               // 현재 탐색 화면
               break;
             case 2:
-              Navigator.pushReplacementNamed(context, '/calendar');
+              Navigator.pushReplacementNamed(context, '/saved');
               break;
             case 3:
-              Navigator.pushReplacementNamed(context, '/profile');
+              Navigator.pushReplacementNamed(context, '/my');
               break;
           }
         },

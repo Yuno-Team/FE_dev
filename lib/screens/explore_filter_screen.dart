@@ -19,6 +19,7 @@ class _ExploreFilterScreenState extends State<ExploreFilterScreen> {
   String selectedMajorRequirement = '인문계열';
   String selectedIncomeRequirement = '무관';
   String selectedRegion = '지역 선택';
+  bool _isMyConditionsHovered = false;
 
   // 정책 대분류 (실제 데이터)
   List<String> mainCategories = ['일자리', '주거', '교육', '복지문화', '참여권리'];
@@ -106,18 +107,32 @@ class _ExploreFilterScreenState extends State<ExploreFilterScreen> {
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                    child: GestureDetector(
-                      onTap: () {
-                        // 내 조건 입력 기능
-                      },
-                      child: Text(
-                        '내 조건 입력',
-                        style: TextStyle(
-                          fontFamily: 'Pretendard',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFFBDC4D0),
-                          letterSpacing: -0.8,
+                    child: MouseRegion(
+                      onEnter: (_) => setState(() => _isMyConditionsHovered = true),
+                      onExit: (_) => setState(() => _isMyConditionsHovered = false),
+                      child: GestureDetector(
+                        onTap: _loadMyConditions,
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 200),
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _isMyConditionsHovered 
+                                ? Color(0xFF1447E6).withOpacity(0.1) 
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            '내 조건 입력',
+                            style: TextStyle(
+                              fontFamily: 'Pretendard',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: _isMyConditionsHovered 
+                                  ? Color(0xFF1447E6) 
+                                  : Color(0xFFBDC4D0),
+                              letterSpacing: -0.8,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -456,5 +471,21 @@ class _ExploreFilterScreenState extends State<ExploreFilterScreen> {
         ),
       ],
     );
+  }
+
+  void _loadMyConditions() {
+    setState(() {
+      // 사용자의 기본 조건들을 자동으로 설정
+      selectedMainCategory = '일자리';
+      selectedSubCategory = '취업';
+      selectedPolicyMethod = '프로그램';
+      selectedMaritalStatus = '미혼';
+      selectedEmploymentStatus = '미취업자';
+      selectedEducationLevel = '대학 재학';
+      selectedSpecialRequirement = '제한없음';
+      selectedMajorRequirement = '공학계열';
+      selectedIncomeRequirement = '8분위 이하';
+      selectedRegion = '서울';
+    });
   }
 }

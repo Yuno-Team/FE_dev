@@ -7,6 +7,14 @@ import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/explore_entry_screen.dart';
 import 'screens/explore_filter_screen.dart';
+import 'screens/my_screen.dart';
+import 'screens/my_profile_edit_screen.dart';
+import 'screens/my_interests_edit_screen.dart';
+import 'screens/my_notification_settings_screen.dart';
+import 'screens/my_terms_screen.dart';
+import 'screens/my_withdrawal_screen.dart';
+import 'screens/saved_policies_screen.dart';
+import 'screens/policy_detail_screen.dart';
 
 void main() {
   runApp(
@@ -55,6 +63,22 @@ class MyApp extends StatelessWidget {
         ),
         '/explore': (context) => ExploreEntryScreen(),
         '/explore_filter': (context) => ExploreFilterScreen(),
+        '/saved': (context) => SavedPoliciesScreen(),
+        '/my': (context) => MyScreen(),
+        '/my_profile_edit': (context) => MyProfileEditScreen(),
+        '/my_interests_edit': (context) => MyInterestsEditScreen(),
+        '/my_notification_settings': (context) => MyNotificationSettingsScreen(),
+        '/my_terms': (context) => MyTermsScreen(),
+        '/my_withdrawal': (context) => MyWithdrawalScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/policy_detail') {
+          final policyId = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => PolicyDetailScreen(policyId: policyId),
+          );
+        }
+        return null;
       },
     );
   }

@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 import 'policy_ai_summary_screen.dart';
+import '../services/policy_service.dart';
+import '../models/policy.dart';
 
 class PolicyDetailScreen extends StatefulWidget {
   final String policyId;
-  final String title;
-  final String description;
-  final String category;
-  final String region;
 
   const PolicyDetailScreen({
     Key? key,
     required this.policyId,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.region,
   }) : super(key: key);
 
   @override
@@ -26,6 +20,11 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen>
   bool _isLoadingAiSummary = false;
   String? _aiSummaryResult;
   late AnimationController _loadingController;
+  bool _isSaved = false; // 저장 상태
+  
+  Policy? _policy; // 정책 정보
+  bool _isLoading = true; // 정책 로딩 상태
+  final PolicyService _policyService = PolicyService();
 
   @override
   void initState() {
@@ -34,6 +33,27 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen>
       duration: Duration(seconds: 2),
       vsync: this,
     );
+    _loadPolicy();
+  }
+
+  Future<void> _loadPolicy() async {
+    try {
+      // policyId를 사용해서 정책 정보 로드
+      final policies = await _policyService.searchPolicies('');
+      final policy = policies.firstWhere(
+        (p) => p.id == widget.policyId,
+        orElse: () => policies.first, // 정책을 찾지 못하면 첫 번째 정책 사용
+      );
+      
+      setState(() {
+        _policy = policy;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -64,6 +84,32 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Color(0xFF111317),
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF1447E6),
+          ),
+        ),
+      );
+    }
+
+    if (_policy == null) {
+      return Scaffold(
+        backgroundColor: Color(0xFF111317),
+        body: Center(
+          child: Text(
+            '정책을 찾을 수 없습니다.',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Color(0xFF111317),
       body: SafeArea(
@@ -130,7 +176,7 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen>
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            widget.category,
+                            _policy!.bscPlanPlcyWayNoNm,
                             style: TextStyle(
                               fontFamily: 'Pretendard',
                               fontSize: 14,
@@ -149,7 +195,7 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen>
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            widget.region,
+                            _policy!.rgtrupInstCdNm,
                             style: TextStyle(
                               fontFamily: 'Pretendard',
                               fontSize: 14,
@@ -166,7 +212,7 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen>
                     
                     // 정책명과 설명
                     Text(
-                      widget.title,
+                      _policy!.plcyNm,
                       style: TextStyle(
                         fontFamily: 'Pretendard',
                         fontSize: 24,
@@ -179,7 +225,7 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen>
                     SizedBox(height: 16),
                     
                     Text(
-                      widget.description,
+                      _policy!.plcyExplnCn,
                       style: TextStyle(
                         fontFamily: 'Pretendard',
                         fontSize: 14,
@@ -382,27 +428,23 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen>
           height: 56,
           child: ElevatedButton(
             onPressed: () {
-              // 저장 기능
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('정책이 저장되었습니다.'),
-                  backgroundColor: Color(0xFF252931),
-                ),
-              );
+              setState(() {
+                _isSaved = !_isSaved; // 토글 방식으로 변경
+              });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFF6F8FA),
+              backgroundColor: _isSaved ? Color(0xFF1447E6) : Color(0xFFF6F8FA), // blue/600 색상 적용
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
-              '저장',
+              _isSaved ? '저장됨 ✓' : '저장',
               style: TextStyle(
                 fontFamily: 'Pretendard',
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1D23),
+                color: _isSaved ? Color(0xFFE1E5EC) : Color(0xFF1A1D23), // gray/100 색상 적용
                 letterSpacing: -1.0,
                 height: 24/20,
               ),

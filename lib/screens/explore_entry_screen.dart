@@ -168,10 +168,10 @@ class _ExploreEntryScreenState extends State<ExploreEntryScreen> {
               // 현재 탐색 화면
               break;
             case 2:
-              Navigator.pushReplacementNamed(context, '/calendar');
+              Navigator.pushNamed(context, '/saved');
               break;
             case 3:
-              Navigator.pushReplacementNamed(context, '/profile');
+              Navigator.pushNamed(context, '/my');
               break;
           }
         },

@@ -108,10 +108,10 @@ class _ExploreLoadingScreenState extends State<ExploreLoadingScreen> {
               // 현재 탐색 화면
               break;
             case 2:
-              Navigator.pushReplacementNamed(context, '/calendar');
+              Navigator.pushReplacementNamed(context, '/saved');
               break;
             case 3:
-              Navigator.pushReplacementNamed(context, '/profile');
+              Navigator.pushReplacementNamed(context, '/my');
               break;
           }
         },
@@ -128,3 +128,6 @@ extension OpacityExtension on Widget {
     );
   }
 }
+
+
+
